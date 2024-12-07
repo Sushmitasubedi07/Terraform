@@ -1,0 +1,51 @@
+##create VPC
+resource "aws_vpc" "myvpc"{
+    cidr_block = "10.0.0.0/16"
+    tags={
+        Name = "myvpc"
+    }
+}
+##create a public subnet
+resource "aws_subnet" "publicsubnet"{
+    vpc_id = aws_vpc.myvpc.id
+    cidr_block = "10.0.1.0/24"
+}
+##create a public subnet
+resource "aws_subnet" "publicsubnet"{
+    vpc_id = aws_vpc.myvpc.id
+    cidr_block = "10.0.1.0/24"
+
+}
+##create a private subnet
+resource "aws_subnet" "privatesubnet"{
+    vpc_id = aws_vpc.myvpc.id
+    cidr_block = "10.0.2.0/24"
+}
+##create a gateway
+resource "aws_internet_gateway" "myigw"{
+    vpc_id = aws_vpc.myvpc.id
+
+    tags ={
+      Name = "MyInternetGateway"
+
+ }
+}
+ ## create a RouteTable for public subnet
+ resource "aws_route_table" "publicRT" {
+  vpc_id = aws_vpc.myvpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.myigw.id
+  }
+
+  tags = {
+    Name = "PublicRouteTable"
+  }
+}
+ ##route table association public subnet
+ resource"aws_route_table_association" "RTA"{
+    subnet_id = aws_subnet.publicsubnet.id
+    route_table_id = aws_route_table.publicRT.id
+ }
+         
